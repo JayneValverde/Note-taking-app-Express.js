@@ -2,17 +2,21 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
+const util = require("util");
 
-const notes = require("./db/db.json");
+// Helper method for generating unique ids 
 const uuid = require("uuid");
 
-// TODO: Handle Asynchronous Processes 
+const notes = require("./db/db.json");
 
+// TODO: Handle Asynchronous Processes 
+const readFileAsync = util.promisify(fs.readFile);
+const writeFileAsync = util.promisify(fs.writeFile);
 
 
 // TODO: Setting Up Server
 const app = express();
-var PORT = process.env.PORT || 8000;
+var PORT = process.env.PORT || 3001;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -21,11 +25,15 @@ app.use(express.json());
 app.use(express.static("./Develop/public"));
 
 
-// TODO: API Route | "GET" request 
+// TODO: API Route | "GET" request | Populate the saved notes from the JSON file 
+app.get("/api/notes", (req, res) => {
+    readFileAsync("./Develope/db/db.json", "utf-8").then(function(data) {
+        notes = [].concat(JSON.parse(data))
+        res.json(notes);
+    })
+});
 
-
-
-// TODO: API Route | "POST" request 
+// TODO: API Route | "POST" request | Post new notes to the JSON file when entered and saved
 
 
 
@@ -34,7 +42,20 @@ app.use(express.static("./Develop/public"));
 
 
 // TODO: HTML Routes 
+app.get("/notes", (req, res) => {
+    res.sendFile(path.join(__dirname, "./Develop/public/notes.html"));
+});
 
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "./Develop/public/index.html"));
+});
 
+// If no matching route is found, default to home page
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "./Develop/public/index.html"));
+})
 
 // TODO: Listening 
+app.listen(PORT, () =>
+    console.log("App listening on PORT " + PORT)
+);
