@@ -6,7 +6,6 @@ const util = require("util");
 
 // Helper method for generating unique ids 
 const uuid = require("uuid");
-
 const notes = require("./db/db.json");
 
 // TODO: Handle Asynchronous Processes 
@@ -26,7 +25,7 @@ app.use(express.static("./Develop/public"));
 
 
 // TODO: API Route | "GET" request | Populate the saved notes from the JSON file 
-app.get("/api/notes", (req, res) => {
+app.get('/api/notes', (req, res) => {
     readFileAsync("./Develope/db/db.json", "utf-8").then(function(data) {
         notes = [].concat(JSON.parse(data))
         res.json(notes);
@@ -34,7 +33,20 @@ app.get("/api/notes", (req, res) => {
 });
 
 // TODO: API Route | "POST" request | Post new notes to the JSON file when entered and saved
-
+app.post('/api/notes', (req, res) => {
+    const note = req.body; 
+    readFileAsync('./Develop/db/db.json', 'utf-8').then(function(data) {
+        const notes = [].concat(JSON.parse(data));
+        note.id = notes.length =1
+        notes.push(note);
+        return notes
+    }).then(function(notes) {
+        writeFileAsync('./develop/db/db.json', JSON.stringify(notes)).then(function(){
+            console.log("Note has been updated");
+        })
+        res.json(notes);
+    })
+});
 
 
 // TODO: API Route | "DELETE" request 
