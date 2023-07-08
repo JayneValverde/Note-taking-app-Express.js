@@ -26,7 +26,7 @@ app.use(express.static("./Develop/public"));
 
 // TODO: API Route | "GET" request | Populate the saved notes from the JSON file 
 app.get('/api/notes', (req, res) => {
-    readFileAsync("./Develope/db/db.json", "utf-8").then(function(data) {
+    readFileAsync("./db/db.json", "utf-8").then(function(data) {
         notes = [].concat(JSON.parse(data))
         res.json(notes);
     })
@@ -35,13 +35,13 @@ app.get('/api/notes', (req, res) => {
 // TODO: API Route | "POST" request | Post new notes to the JSON file when entered and saved
 app.post('/api/notes', (req, res) => {
     const note = req.body; 
-    readFileAsync('./Develop/db/db.json', 'utf-8').then(function(data) {
+    readFileAsync('./db/db.json', 'utf-8').then(function(data) {
         const notes = [].concat(JSON.parse(data));
         note.id = notes.length =1
         notes.push(note);
         return notes
     }).then(function(notes) {
-        writeFileAsync('./develop/db/db.json', JSON.stringify(notes)).then(function(){
+        writeFileAsync('./db/db.json', JSON.stringify(notes)).then(function(){
             console.log("Note has been updated");
         })
         res.json(notes);
@@ -55,16 +55,16 @@ app.post('/api/notes', (req, res) => {
 
 // TODO: HTML Routes 
 app.get("/notes", (req, res) => {
-    res.sendFile(path.join(__dirname, "./Develop/public/notes.html"));
+    res.sendFile(path.join(__dirname, "./public/notes.html"));
 });
 
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "./Develop/public/index.html"));
+    res.sendFile(path.join(__dirname, "./public/index.html"));
 });
 
 // If no matching route is found, default to home page
 app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "./Develop/public/index.html"));
+    res.sendFile(path.join(__dirname, "./public/index.html"));
 })
 
 // TODO: Listening 
