@@ -3,10 +3,11 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const util = require("util");
+// const notes = require("./db/db.json");
 
 // Helper method for generating unique ids 
-const uuid = require("uuid");
-const notes = require("./db/db.json");
+// const uuid = require("uuid");
+// const notes = require("./db/db.json");
 
 // TODO: Handle Asynchronous Processes 
 const readFileAsync = util.promisify(fs.readFile);
@@ -26,7 +27,7 @@ app.use(express.static("./Develop/public"));
 
 // TODO: API Route | "GET" request | Populate the saved notes from the JSON file 
 app.get('/api/notes', (req, res) => {
-    readFileAsync("./db/db.json", "utf-8").then(function(data) {
+    readFileAsync('./db/db.json', 'utf-8').then(function(data) {
         notes = [].concat(JSON.parse(data))
         res.json(notes);
     })
@@ -37,20 +38,35 @@ app.post('/api/notes', (req, res) => {
     const note = req.body; 
     readFileAsync('./db/db.json', 'utf-8').then(function(data) {
         const notes = [].concat(JSON.parse(data));
-        note.id = notes.length =1
+        note.id = notes.length = +1
         notes.push(note);
         return notes
     }).then(function(notes) {
         writeFileAsync('./db/db.json', JSON.stringify(notes)).then(function(){
             console.log("Note has been updated");
         })
-        res.json(notes);
+        res.json(note);
     })
 });
 
 
 // TODO: API Route | "DELETE" request 
-
+app.delete('/api/notes/:id', (req, res) => {
+    const idDelete = parseInt(req.params.id);
+    readFileAsync('./db/db.json', 'utf-8').then(function(data) {
+        const notes = [].concat(JSON.parse(data));
+        const newNotesData = []
+        for (let i = 0; i<notes.length; i++) {
+            if(idDelete !== notes[i].id) {
+                newNotesData.push(notes[i])
+            }
+        }
+        return newNotesData
+    }).then(function(notes) {
+        writeFileAsync('.db/db.json', JSON.stringify(notes))
+        res.send('Successfully saved!');
+    })
+})
 
 
 // TODO: HTML Routes 
